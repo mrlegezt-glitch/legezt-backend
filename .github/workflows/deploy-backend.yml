@@ -29,6 +29,7 @@ jobs:
           mkdir deploy_dir
           cp -r dist deploy_dir/
           cp -r prisma deploy_dir/
+          cp -r node_modules deploy_dir/
           cp package.json deploy_dir/
           cd deploy_dir
           zip -r ../deploy.zip .
