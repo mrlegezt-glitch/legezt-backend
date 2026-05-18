@@ -155,7 +155,7 @@ app.get("/", (req, res) => {
 
         .health-grid {
           display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+          grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
           gap: 16px;
           margin-bottom: 40px;
         }
@@ -179,7 +179,7 @@ app.get("/", (req, res) => {
           margin-bottom: 8px;
         }
         .health-card-value {
-          font-size: 1.25rem;
+          font-size: 1.15rem;
           font-weight: 600;
           color: #ffffff;
           display: flex;
@@ -276,6 +276,14 @@ app.get("/", (req, res) => {
             <div class="health-card-title">Environment</div>
             <div class="health-card-value" style="color: var(--accent-primary);">
               Production
+            </div>
+          </div>
+          <div class="health-card">
+            <div class="health-card-title">Frontend Status</div>
+            <div class="health-card-value">
+              <a href="https://mrlegezt.me" target="_blank" style="color: #10b981; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 1.05rem;">
+                <span class="status-dot" style="background: #10b981; box-shadow: 0 0 10px #10b981;"></span> Linked
+              </a>
             </div>
           </div>
         </div>
