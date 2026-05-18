@@ -13,6 +13,7 @@ import { getStudents, createStudent, updateStudent, deleteStudent } from "./cont
 import { getTeamMembers, createTeamMember, updateTeamMember, deleteTeamMember } from "./controllers/teamController";
 import { verifyClerkToken, verifyAnyClerkToken } from "./middleware/clerkAuth";
 import { handleLoginEvent, handleAdminBroadcast } from "./controllers/emailController";
+import { getIncomingEmails } from "./controllers/inboxController";
 
 // Load Environment Configuration
 dotenv.config();
@@ -103,6 +104,8 @@ app.delete("/api/team", verifyClerkToken, deleteTeamMember);
 // Email Service Endpoints
 app.post("/api/auth/login-event", verifyAnyClerkToken, handleLoginEvent);
 app.post("/api/admin/send-email", verifyClerkToken, handleAdminBroadcast);
+app.get("/api/admin/inbox", verifyClerkToken, getIncomingEmails);
+
 
 
 // Root API documentation interface
