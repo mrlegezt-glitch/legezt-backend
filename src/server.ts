@@ -11,6 +11,7 @@ import { createContactMessage, getContactMessages, markMessageRead } from "./con
 import { getFaculties, createFaculty, updateFaculty, deleteFaculty } from "./controllers/facultyController";
 import { getStudents, createStudent, updateStudent, deleteStudent } from "./controllers/studentController";
 import { getTeamMembers, createTeamMember, updateTeamMember, deleteTeamMember } from "./controllers/teamController";
+import { verifyClerkToken } from "./middleware/clerkAuth";
 
 // Load Environment Configuration
 dotenv.config();
@@ -36,44 +37,67 @@ const storage = multer.diskStorage({
   }
 });
 
-const upload = multer({ storage });
+const upload = multer({ 
+  storage,
+  limits: {
+    fileSize: 10 * 1024 * 1024 // Strict 10MB limit to prevent DoS attacks
+  },
+  fileFilter: (req, file, cb) => {
+    const allowedMimeTypes = [
+      "application/pdf",
+      "application/msword",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "text/plain",
+      "image/jpeg",
+      "image/png",
+      "image/webp",
+      "image/gif"
+    ];
+
+    if (allowedMimeTypes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error("Security Alert: Only safe document/image uploads are allowed (.pdf, .doc, .docx, .txt, .jpg, .png, .webp, .gif)."));
+    }
+  }
+});
 
 // API Route Mappings
 
 // Services Endpoints
 app.get("/api/services", getServices);
-app.get("/api/services/admin", getAllServicesAdmin);
-app.post("/api/services", createService);
-app.put("/api/services", updateService);
-app.delete("/api/services", deleteService);
+app.get("/api/services/admin", verifyClerkToken, getAllServicesAdmin);
+app.post("/api/services", verifyClerkToken, createService);
+app.put("/api/services", verifyClerkToken, updateService);
+app.delete("/api/services", verifyClerkToken, deleteService);
 
 // Documents Endpoints
 app.get("/api/documents", getDocuments);
-app.post("/api/documents", upload.single("file"), createDocument);
-app.delete("/api/documents", deleteDocument);
+app.post("/api/documents", verifyClerkToken, upload.single("file"), createDocument);
+app.delete("/api/documents", verifyClerkToken, deleteDocument);
 
 // Contact Messages Endpoints
 app.post("/api/contact", createContactMessage);
-app.get("/api/contact/messages", getContactMessages);
-app.put("/api/contact/read", markMessageRead);
+app.get("/api/contact/messages", verifyClerkToken, getContactMessages);
+app.put("/api/contact/read", verifyClerkToken, markMessageRead);
 
 // Faculty Endpoints
 app.get("/api/faculties", getFaculties);
-app.post("/api/faculties", createFaculty);
-app.put("/api/faculties", updateFaculty);
-app.delete("/api/faculties", deleteFaculty);
+app.post("/api/faculties", verifyClerkToken, createFaculty);
+app.put("/api/faculties", verifyClerkToken, updateFaculty);
+app.delete("/api/faculties", verifyClerkToken, deleteFaculty);
 
 // Student Endpoints
 app.get("/api/students", getStudents);
-app.post("/api/students", createStudent);
-app.put("/api/students", updateStudent);
-app.delete("/api/students", deleteStudent);
+app.post("/api/students", verifyClerkToken, createStudent);
+app.put("/api/students", verifyClerkToken, updateStudent);
+app.delete("/api/students", verifyClerkToken, deleteStudent);
 
 // Team Members Endpoints
 app.get("/api/team", getTeamMembers);
-app.post("/api/team", createTeamMember);
-app.put("/api/team", updateTeamMember);
-app.delete("/api/team", deleteTeamMember);
+app.post("/api/team", verifyClerkToken, createTeamMember);
+app.put("/api/team", verifyClerkToken, updateTeamMember);
+app.delete("/api/team", verifyClerkToken, deleteTeamMember);
 
 // Root API documentation interface
 app.get("/", (req, res) => {
