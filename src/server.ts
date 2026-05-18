@@ -8,6 +8,9 @@ import fs from "fs";
 import { getServices, getAllServicesAdmin, createService, updateService, deleteService } from "./controllers/servicesController";
 import { getDocuments, createDocument, deleteDocument } from "./controllers/documentsController";
 import { createContactMessage, getContactMessages, markMessageRead } from "./controllers/contactController";
+import { getFaculties, createFaculty, updateFaculty, deleteFaculty } from "./controllers/facultyController";
+import { getStudents, createStudent, updateStudent, deleteStudent } from "./controllers/studentController";
+import { getTeamMembers, createTeamMember, updateTeamMember, deleteTeamMember } from "./controllers/teamController";
 
 // Load Environment Configuration
 dotenv.config();
@@ -53,6 +56,24 @@ app.delete("/api/documents", deleteDocument);
 app.post("/api/contact", createContactMessage);
 app.get("/api/contact/messages", getContactMessages);
 app.put("/api/contact/read", markMessageRead);
+
+// Faculty Endpoints
+app.get("/api/faculties", getFaculties);
+app.post("/api/faculties", createFaculty);
+app.put("/api/faculties", updateFaculty);
+app.delete("/api/faculties", deleteFaculty);
+
+// Student Endpoints
+app.get("/api/students", getStudents);
+app.post("/api/students", createStudent);
+app.put("/api/students", updateStudent);
+app.delete("/api/students", deleteStudent);
+
+// Team Members Endpoints
+app.get("/api/team", getTeamMembers);
+app.post("/api/team", createTeamMember);
+app.put("/api/team", updateTeamMember);
+app.delete("/api/team", deleteTeamMember);
 
 // Root API documentation interface
 app.get("/", (req, res) => {
