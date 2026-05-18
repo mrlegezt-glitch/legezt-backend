@@ -11,7 +11,8 @@ import { createContactMessage, getContactMessages, markMessageRead } from "./con
 import { getFaculties, createFaculty, updateFaculty, deleteFaculty } from "./controllers/facultyController";
 import { getStudents, createStudent, updateStudent, deleteStudent } from "./controllers/studentController";
 import { getTeamMembers, createTeamMember, updateTeamMember, deleteTeamMember } from "./controllers/teamController";
-import { verifyClerkToken } from "./middleware/clerkAuth";
+import { verifyClerkToken, verifyAnyClerkToken } from "./middleware/clerkAuth";
+import { handleLoginEvent, handleAdminBroadcast } from "./controllers/emailController";
 
 // Load Environment Configuration
 dotenv.config();
@@ -98,6 +99,11 @@ app.get("/api/team", getTeamMembers);
 app.post("/api/team", verifyClerkToken, createTeamMember);
 app.put("/api/team", verifyClerkToken, updateTeamMember);
 app.delete("/api/team", verifyClerkToken, deleteTeamMember);
+
+// Email Service Endpoints
+app.post("/api/auth/login-event", verifyAnyClerkToken, handleLoginEvent);
+app.post("/api/admin/send-email", verifyClerkToken, handleAdminBroadcast);
+
 
 // Root API documentation interface
 app.get("/", (req, res) => {

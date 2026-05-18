@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
+import { sendWelcomeEmail } from "../utils/mailer";
 
 const prisma = new PrismaClient();
 
@@ -18,6 +19,16 @@ export const createStudent = async (req: Request, res: Response) => {
     const student = await prisma.student.create({
       data: { name, enrollmentNo, course, batchYear, email },
     });
+    
+    // Trigger welcome email asynchronously
+    if (student.email) {
+      sendWelcomeEmail(student.email, student.name, "student", {
+        course: student.course,
+        batchYear: student.batchYear,
+        enrollmentNo: student.enrollmentNo
+      }).catch(err => console.error("Error dispatching student welcome email:", err));
+    }
+
     res.status(201).json(student);
   } catch (error) {
     res.status(500).json({ error: "Failed to create student" });

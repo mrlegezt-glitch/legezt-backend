@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
+import { sendWelcomeEmail } from "../utils/mailer";
 
 const prisma = new PrismaClient();
 
@@ -18,6 +19,14 @@ export const createTeamMember = async (req: Request, res: Response) => {
     const teamMember = await prisma.teamMember.create({
       data: { name, role, email, githubUrl, linkedinUrl, imageUrl },
     });
+
+    // Trigger welcome email asynchronously
+    if (teamMember.email) {
+      sendWelcomeEmail(teamMember.email, teamMember.name, "team", {
+        role: teamMember.role
+      }).catch(err => console.error("Error dispatching team member welcome email:", err));
+    }
+
     res.status(201).json(teamMember);
   } catch (error) {
     res.status(500).json({ error: "Failed to create team member" });

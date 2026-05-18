@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
+import { sendWelcomeEmail } from "../utils/mailer";
 
 const prisma = new PrismaClient();
 
@@ -18,6 +19,15 @@ export const createFaculty = async (req: Request, res: Response) => {
     const faculty = await prisma.faculty.create({
       data: { name, department, designation, email, imageUrl },
     });
+
+    // Trigger welcome email asynchronously
+    if (faculty.email) {
+      sendWelcomeEmail(faculty.email, faculty.name, "faculty", {
+        department: faculty.department,
+        designation: faculty.designation
+      }).catch(err => console.error("Error dispatching faculty welcome email:", err));
+    }
+
     res.status(201).json(faculty);
   } catch (error) {
     res.status(500).json({ error: "Failed to create faculty" });
