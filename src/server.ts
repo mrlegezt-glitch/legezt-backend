@@ -26,15 +26,15 @@ app.use(cors());
 app.use(express.json());
 
 // Serve uploads statically in production so multi-container setup can fetch from backend
-const uploadPath = path.join(__dirname, "..", "..", "frontend", "public", "uploads");
-app.use("/uploads", express.static(uploadPath));
+const uploadPath = process.env.NODE_ENV === "production" || process.env.PORT
+  ? path.join(__dirname, "..", "uploads")
+  : path.join(__dirname, "..", "..", "frontend", "public", "uploads");
 
+app.use("/uploads", express.static(uploadPath));
 
 // Configure Multer for File Uploads
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    // Save uploads directly into Next.js public/uploads folder so the frontend can serve them statically
-    const uploadPath = path.join(__dirname, "..", "..", "frontend", "public", "uploads");
     fs.mkdirSync(uploadPath, { recursive: true });
     cb(null, uploadPath);
   },
