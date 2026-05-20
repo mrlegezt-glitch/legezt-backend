@@ -25,6 +25,11 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
+// Serve uploads statically in production so multi-container setup can fetch from backend
+const uploadPath = path.join(__dirname, "..", "..", "frontend", "public", "uploads");
+app.use("/uploads", express.static(uploadPath));
+
+
 // Configure Multer for File Uploads
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
